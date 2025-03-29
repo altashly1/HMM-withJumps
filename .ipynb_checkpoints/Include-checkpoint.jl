@@ -26,6 +26,10 @@ using HypothesisTests;
 using CSV
 using StatsBase
 using Distances
+using PQPolygonSDK
+using Dates
+using HTTP
+using JSON3
 
 # include my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
