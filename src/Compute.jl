@@ -89,3 +89,10 @@ function log_growth_matrix(dataset::Dict{String, DataFrame},
     # return -
     return return_matrix;
 end
+
+function vwap(price::AbstractVector, volume::AbstractVector)
+    @assert length(price) == length(volume) "Price and volume must be same length"
+    cum_pv = cumsum(price .* volume)
+    cum_v = cumsum(volume)
+    return cum_pv ./ cum_v
+end
