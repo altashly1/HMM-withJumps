@@ -62,37 +62,57 @@ end
 (m::MyHiddenMarkovModel)(start::Int64, steps::Int64) = _simulate(m, start, steps); 
 (m::MyHiddenMarkovModelWithJumps)(start::Int64, steps::Int64) = _simulate(m, start, steps); 
 
-function log_growth_matrix(dataset::Dict{String, DataFrame}, 
-    firms::Array{String,1}; Δt::Float64 = (1.0/252.0), risk_free_rate::Float64 = 0.0, 
-    testfirm="AAPL", keycol::Symbol = :volume_weighted_average_price)::Array{Float64,2}
+# function log_growth_matrix(dataset::Dict{String, DataFrame}, 
+#     firms::Array{String,1}; Δt::Float64 = (1.0/252.0), risk_free_rate::Float64 = 0.0, 
+#     testfirm="AAPL", keycol::Symbol = :volume_weighted_average_price)::Array{Float64,2}
 
-    # initialize -
-    number_of_firms = length(firms);
-    number_of_trading_days = nrow(dataset[testfirm]);
-    return_matrix = Array{Float64,2}(undef, number_of_trading_days-1, number_of_firms);
+#     # initialize -
+#     number_of_firms = length(firms);
+#     number_of_trading_days = nrow(dataset[testfirm]);
+#     return_matrix = Array{Float64,2}(undef, number_of_trading_days-1, number_of_firms);
 
-    # main loop -
-    for i ∈ eachindex(firms) 
+#     # main loop -
+#     for i ∈ eachindex(firms) 
 
-        # get the firm data -
-        firm_index = firms[i];
-        firm_data = dataset[firm_index];
+#         # get the firm data -
+#         firm_index = firms[i];
+#         firm_data = dataset[firm_index];
 
-        # compute the log returns -
-        for j ∈ 2:number_of_trading_days
-            S₁ = firm_data[j-1, keycol];
-            S₂ = firm_data[j, keycol];
-            return_matrix[j-1, i] = (1/Δt)*(log(S₂/S₁)) - risk_free_rate;
-        end
+#         # compute the log returns -
+#         for j ∈ 2:number_of_trading_days
+#             S₁ = firm_data[j-1, keycol];
+#             S₂ = firm_data[j, keycol];
+#             return_matrix[j-1, i] = (1/Δt)*(log(S₂/S₁)) - risk_free_rate;
+#         end
+#     end
+
+#     # return -
+#     return return_matrix;
+# end
+
+function vwap(df::DataFrame)::Array{Float64,1}
+
+    # Get the number of rows in the DataFrame
+    n = nrow(df)
+    
+    # Initialize an array to store the VWAP values
+    vwap_array = Array{Float64,1}(undef, n)
+    
+    # Initialize cumulative price and volume
+    cumulative_pv = 0.0  # sum of price * volume
+    cumulative_volume = 0.0
+
+    # Calculate VWAP for each row
+    for i in 1:n
+        typical_price = (df.high[i] + df.low[i] + df.close[i]) / 3
+        volume = df.volume[i]
+
+        cumulative_pv += typical_price * volume
+        cumulative_volume += volume
+
+        vwap_array[i] = cumulative_pv / cumulative_volume
     end
 
-    # return -
-    return return_matrix;
-end
-
-function vwap(price::AbstractVector, volume::AbstractVector)
-    @assert length(price) == length(volume) "Price and volume must be same length"
-    cum_pv = cumsum(price .* volume)
-    cum_v = cumsum(volume)
-    return cum_pv ./ cum_v
+    # Return the VWAP array
+    return vwap_array
 end
