@@ -8,7 +8,9 @@ The `MyHiddenMarkovModel` mutable struct represents a hidden Markov model (HMM) 
 ### Required fields
 - `states::Array{Int64,1}`: The states of the model
 - `transition::Dict{Int64, Categorical}`: The transition matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution
-- `emission::Dict{Int64, Categorical}`: The emission matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution   
+- `emission::Dict{Int64, Categorical}`: The emission matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution
+### Constructor
+- `MyHiddenMarkovModel()`: Creates a new instance of the `MyHiddenMarkovModel` struct.
 """
 mutable struct MyHiddenMarkovModel <: AbstractMarkovModel
     
@@ -20,6 +22,24 @@ mutable struct MyHiddenMarkovModel <: AbstractMarkovModel
     # constructor -
     MyHiddenMarkovModel() = new();
 end
+
+
+"""
+    mutable struct MyHiddenMarkovModelWithJumps <: AbstractMarkovModel
+
+The `MyHiddenMarkovModelWithJumps` mutable struct represents a hidden Markov model (HMM) with discrete states and jump probabilities.
+
+### Required fields
+- `states::Array{Int64,1}`: The states of the model
+- `transition::Dict{Int64, Categorical}`: The transition matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution
+- `inverse_transition::Dict{Int64, Categorical}`: The inverse transition matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution
+- `emission::Dict{Int64, Categorical}`: The emission matrix of the model encoded as a dictionary where the `key` is the state and the `value` is a `Categorical` distribution
+- `ϵ::Float64`: The jump probability
+- `λ::Float64`: The jump distribution parameter
+- `jump_distribution::Poisson`: The jump distribution
+### Constructor
+- `MyHiddenMarkovModelWithJumps()`: Creates a new instance of the `MyHiddenMarkovModelWithJumps` struct.
+"""
 
 mutable struct MyHiddenMarkovModelWithJumps <: AbstractMarkovModel
     
@@ -36,4 +56,3 @@ mutable struct MyHiddenMarkovModelWithJumps <: AbstractMarkovModel
     # constructor -
     MyHiddenMarkovModelWithJumps() = new();
 end
-
