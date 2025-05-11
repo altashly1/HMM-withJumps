@@ -28,27 +28,30 @@ The current implementation is validated with a comprehensive dataset covering:
 * Historical data spanning 2,515 trading days
 * Representative tickers such as NVDA, AAPL, and SPY
 
-## Getting Started
+## Prerequisites and Dependencies
 
-### Prerequisites
-
-* Julia (version 1.9 or higher recommended)
-* Required packages:
-
-  ```julia
-  using Pkg
-  Pkg.add(["CSV", "DataFrames", "Distributions", "StatsBase", "Plots", "HMMBase"])
-  ```
-
-### Running Simulations
-
-To run simulations, execute the main script with appropriate parameters:
+Ensure you have Julia (version 1.9 or higher recommended) installed. Install required packages by running:
 
 ```julia
-include("main.jl")
+using Pkg
+Pkg.add([
+    "CSV", "DataFrames", "Distributions", "StatsBase", "Plots", "HMMBase", 
+    "JLD2", "FileIO", "Colors", "StatsPlots", "HypothesisTests", "Distances", 
+    "PQPolygonSDK", "Dates", "HTTP", "JSON3", "VLQuantitativeFinancePackage", "LinearAlgebra", "Statistics"
+])
 ```
 
-Adjust the parameters in the provided configuration file as needed for your specific tickers and simulation scenarios.
+## Running Simulations
+
+For interactive use and experimentation, a Jupyter notebook (`simulation_notebook.ipynb`) is also provided.
+
+To run simulations, execute the provided script:
+
+```julia
+include("include.jl")
+```
+
+Adjust parameters in the configuration file as needed for specific tickers and simulation scenarios.
 
 ## Validation
 
