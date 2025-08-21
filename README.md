@@ -64,3 +64,11 @@ Contributions to improve functionality or extend capabilities are welcome. Pleas
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Disclaimer
+
+This project is intended **for research and educational purposes only**.  
+It does **not** constitute financial advice, investment recommendations, or trading strategies.  
+
+The models and simulations provided are simplified representations of financial markets and may not capture all real-world complexities.  
+Users are solely responsible for any decisions made using this code.
