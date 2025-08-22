@@ -94,4 +94,36 @@ function build(model::Type{MyHiddenMarkovModelWithJumps}, data::NamedTuple)::MyH
     # return -
     return m;
 end
+
+
+"""
+    build_turing_model(::StudentTModel, data)
+
+Builds the Turing.jl model for a Student's t-distribution.
+"""
+function build_turing_model(::StudentTModel, data)
+    @model function student_t_model(obs)
+        σ ~ Distributions.Truncated(Distributions.Cauchy(0, 1), 0, Inf)
+        μ ~ Distributions.Normal(0, 0.1)
+        ν ~ Distributions.Exponential(1/30.0)
+        obs .~ Distributions.TDist(ν) * σ .+ μ
+    end
+    return student_t_model(data)
+end
+
+
+"""
+    build_turing_model(::LaplaceModel, data)
+
+Builds the Turing.jl model for a Laplace distribution.
+"""
+function build_turing_model(::LaplaceModel, data)
+    @model function laplace_model(obs)
+        μ ~ Distributions.Normal(0, 0.1)
+        b ~ Distributions.Exponential(1.0)
+        obs .~ Distributions.Laplace(μ, b)
+    end
+    return laplace_model(data)
+end
+
 # --------------------------------------------------------------------------------------------- #

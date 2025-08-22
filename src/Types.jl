@@ -1,4 +1,6 @@
 abstract type AbstractMarkovModel end
+abstract type AbstractDistributionModel end
+
 
 """
     mutable struct MyHiddenMarkovModel <: AbstractMarkovModel
@@ -56,3 +58,10 @@ mutable struct MyHiddenMarkovModelWithJumps <: AbstractMarkovModel
     # constructor -
     MyHiddenMarkovModelWithJumps() = new();
 end
+
+
+# A concrete type for the Student's t-distribution model
+struct StudentTModel <: AbstractDistributionModel end
+
+# A concrete type for the Laplace distribution model
+struct LaplaceModel <: AbstractDistributionModel end
