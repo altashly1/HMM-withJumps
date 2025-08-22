@@ -20,7 +20,7 @@ function plot_acf_comparison(observed::Vector, simulated::Vector, title_text::St
 
     L = 252
     τ = 1:(L-1)
-    ci = 1.96 / sqrt(length(data_obs))
+    ci = 2.576 / sqrt(length(data_obs))
 
     ac_obs = autocor(data_obs, τ)
     ac_sim = autocor(data_sim, τ)
@@ -31,7 +31,7 @@ function plot_acf_comparison(observed::Vector, simulated::Vector, title_text::St
     # Update the label to include the random_index
     plot!(p, τ, ac_sim, label="Simulation (Path $(random_index))", linetype=:steppost, lw=2, c=:blue)
     
-    plot!(p, τ, ci * ones(length(τ)), label="95% CI", lw=1.5, c=:gray, ls=:dash)
+    plot!(p, τ, ci * ones(length(τ)), label="99% CI", lw=1.5, c=:gray, ls=:dash)
     plot!(p, τ, -ci * ones(length(τ)), label="", lw=1.5, c=:gray, ls=:dash)
     xlabel!(p, "Lag (trading day)")
     
