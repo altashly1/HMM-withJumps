@@ -118,8 +118,6 @@ function vwap(df::DataFrame)::Array{Float64,1}
 end
 
 
-# src/Compute.jl
-
 """
     learn_return_distribution_mcmc(returns::Vector{Float64}; samples::Int = 2000)
 
@@ -128,8 +126,6 @@ fitted to the equity returns data.
 
 Returns a Turing.jl `Chain` object containing the posterior distributions of the parameters.
 """
-# src/Compute.jl
-
 function learn_distribution_mcmc(model_type::AbstractDistributionModel, returns::Vector{Float64}; samples::Int = 2000)
     
     # 1. Build the correct model based on the input type (e.g., StudentTModel())
