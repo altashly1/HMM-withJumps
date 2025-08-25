@@ -2,7 +2,7 @@
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "84fe85227d7c048d2a9643fbb9efec8bfd172c5c"
+project_hash = "a0e8d5143c44c96a2127f0fdb34556f1180430f1"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "60665b326b75db6517939d0e1875850bc4a54368"
@@ -1580,12 +1580,6 @@ deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
 git-tree-sha1 = "f07c06228a1c670ae4c87d1276b92c7c597fdda0"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.35"
-
-[[deps.PQPolygonSDK]]
-deps = ["CSV", "DataFrames", "Dates", "HTTP", "JSON", "TOML"]
-git-tree-sha1 = "8f515e4be9af868b316caf3df7a47ef81e9d0a26"
-uuid = "a9381516-e38f-4c81-935c-32707fb4df4c"
-version = "0.2.4"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
