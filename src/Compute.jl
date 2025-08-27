@@ -32,7 +32,7 @@ function _simulate(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64):
             bottom_states = [1,2,3]; # super bad
             top_states = [number_of_states-2,number_of_states-1,number_of_states]; # super good
 
-            @show number_of_jumps
+            #@show number_of_jumps
 
             for _ ∈ 1:number_of_jumps
                 if (rand() < 0.52)

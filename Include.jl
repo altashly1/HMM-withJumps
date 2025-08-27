@@ -28,6 +28,8 @@ using StatsBase;
 using Distances;
 using Dates;
 using Turing;
+using ProgressMeter;
+
 
 # include my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
