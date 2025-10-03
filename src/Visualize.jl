@@ -39,5 +39,4 @@ function plot_acf_comparison(observed::Vector, simulated::Vector, title_text::St
     ylabel!(p, "Autocorrelation (AU)")
 
     return p
-end
-
+end;
