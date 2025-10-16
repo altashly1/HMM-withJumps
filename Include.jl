@@ -28,8 +28,7 @@ using Dates;
 using Turing;
 using ProgressMeter;
 using Distances;
-
-
+using PrettyTables;
 
 # include my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
