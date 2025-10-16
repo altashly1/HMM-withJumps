@@ -2,7 +2,7 @@
 
 julia_version = "1.12.0"
 manifest_format = "2.0"
-project_hash = "c64f2481c5712e3c9afdf6595687245243d58593"
+project_hash = "fe705e91a96524b4e15048acdeadaf28d5060abc"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "27cecae79e5cc9935255f90c53bb831cc3c870d7"
@@ -1544,9 +1544,9 @@ version = "4.8.0"
 
 [[deps.OptimizationBase]]
 deps = ["ADTypes", "ArrayInterface", "DifferentiationInterface", "DocStringExtensions", "FastClosures", "LinearAlgebra", "PDMats", "Reexport", "SciMLBase", "SparseArrays", "SparseConnectivityTracer", "SparseMatrixColorings"]
-git-tree-sha1 = "2589d26b4f79760f73a5bad2238ebc5e47c1d794"
+git-tree-sha1 = "2c0d0c5c531f790fe5f8f5e6e858909b11a847ea"
 uuid = "bca83a33-5cc9-4baa-983d-23429ab6bcbb"
-version = "2.13.1"
+version = "2.13.2"
 
     [deps.OptimizationBase.extensions]
     OptimizationEnzymeExt = "Enzyme"
