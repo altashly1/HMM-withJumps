@@ -31,14 +31,8 @@ The current implementation is validated with a comprehensive dataset covering:
 ## Prerequisites and Dependencies
 
 Ensure you have Julia (version 1.9 or higher recommended) installed. Install required packages by running:
-
 ```julia
-using Pkg
-Pkg.add([
-    "CSV", "DataFrames", "Distributions", "StatsBase", "Plots", "HMMBase", 
-    "JLD2", "FileIO", "Colors", "StatsPlots", "HypothesisTests", "Distances", 
-    "PQPolygonSDK", "Dates", "HTTP", "JSON3", "VLQuantitativeFinancePackage", "LinearAlgebra", "Statistics"
-])
+include("include.jl")
 ```
 
 ## Running Simulations
@@ -47,9 +41,7 @@ For interactive use and experimentation, a Jupyter notebook (`simulation_noteboo
 
 To run simulations, execute the provided script:
 
-```julia
-include("include.jl")
-```
+
 
 Adjust parameters in the configuration file as needed for specific tickers and simulation scenarios.
 
