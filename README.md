@@ -37,12 +37,7 @@ include("include.jl")
 
 ## Running Simulations
 
-For interactive use and experimentation, a Jupyter notebook (`simulation_notebook.ipynb`) is also provided.
-
-To run simulations, execute the provided script:
-
-
-
+For interactive use and experimentation, a set of Jupyter notebooks is also provided.
 Adjust parameters in the configuration file as needed for specific tickers and simulation scenarios.
 
 ## Validation
