@@ -13,12 +13,11 @@ Plots the autocorrelation function (ACF) for an observed time series and a singl
 ### Returns
 - `Plots.Plot`: The generated plot object.
 """
-function plot_acf_comparison(observed::Vector, simulated::Vector, title_text::String, random_index::Int; is_absolute::Bool=false)
+function plot_acf_comparison(observed::Vector, simulated::Vector, title_text::String, random_index::Int; is_absolute::Bool=false, L=252)
 
     data_obs = is_absolute ? abs.(observed) : observed
     data_sim = is_absolute ? abs.(simulated) : simulated
 
-    L = 252
     τ = 1:(L-1)
     ci = 2.576 / sqrt(length(data_obs))
 
