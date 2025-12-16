@@ -19,12 +19,6 @@ mutable struct MyHiddenMarkovModel <: AbstractMarkovModel
     emission::Dict{Int64, Categorical}
 
     # --- constructor --- #
-    """
-        MyHiddenMarkovModel()
-    
-    An inner constructor to create a new, uninitialized `MyHiddenMarkovModel` instance.
-    This is intended for internal use; instances should be created through a factory method.
-    """
     MyHiddenMarkovModel() = new();
 end
 
@@ -54,12 +48,6 @@ mutable struct MyHiddenMarkovModelWithJumps <: AbstractMarkovModel
     jump_distribution::Poisson
 
     # --- constructor --- #
-    """
-        MyHiddenMarkovModelWithJumps()
-    
-    An inner constructor to create a new, uninitialized `MyHiddenMarkovModelWithJumps` instance.
-    This is intended for internal use; instances should be created through a factory method.
-    """
     MyHiddenMarkovModelWithJumps() = new();
 end
 
