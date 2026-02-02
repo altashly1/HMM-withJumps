@@ -105,8 +105,62 @@ function _simulate_pagerank(m::MyHiddenMarkovModelWithJumps, start::Int64, steps
     return chain
 end
 
+
+"""
+    _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64) -> Array{Int64,1}
+
+Simulates a path where 'Teleportation' acts as a gravity well (Trap) inside tail states.
+This enforces volatility clustering (persistence) without affecting normal market dynamics.
+"""
+function _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64)::Array{Int64,1}
+    chain = Array{Int64,1}(undef, steps)
+    chain[1] = start
+    
+    n_states = length(m.states)
+    
+    # Define The "Trap" Zones
+    crash_states = 1:3
+    boom_states = (n_states-2):n_states
+    
+    # The "Trap Strength" (Probability of getting stuck in the regime)
+    # You can reuse m.ϵ or define a new parameter. 
+    # Let's assume we want a HIGH persistence, e.g., 0.8
+    trap_strength = 0.8 
+
+    for t in 2:steps
+        prev_state = chain[t-1]
+        
+        # 1. Check if we are currently in a "Trap Zone"
+        in_crash = prev_state in crash_states
+        in_boom  = prev_state in boom_states
+        
+        # 2. Apply Trap Logic (Conditional Teleportation)
+        if (in_crash || in_boom) && (rand() < trap_strength)
+            
+            # We are TRAPPED. Teleport to a random state within the SAME regime.
+            # This creates the "Clustering" effect.
+            if in_crash
+                chain[t] = rand(crash_states)
+            else
+                chain[t] = rand(boom_states)
+            end
+            
+        else
+            # 3. Normal Dynamics (or Failed Trap)
+            # Follow the learned transition matrix.
+            # This allows for:
+            #   a) Normal evolution in normal times.
+            #   b) Natural "Entry" into crashes from normal states.
+            #   c) Natural "Exit" from crashes (if the trap coin flip failed).
+            chain[t] = rand(m.transition[prev_state])
+        end
+    end
+
+    return chain
+end
+
 (m::MyHiddenMarkovModel)(start::Int64, steps::Int64) = _simulate(m, start, steps); 
-# (m::MyHiddenMarkovModelWithJumps)(start::Int64, steps::Int64) = _simulate(m, start, steps); 
+(m::MyHiddenMarkovModelWithJumps)(start::Int64, steps::Int64) = _simulate(m, start, steps); 
 (m::MyHiddenMarkovModelWithJumps)(start::Int64, steps::Int64) = _simulate_pagerank(m, start, steps); 
 
 
