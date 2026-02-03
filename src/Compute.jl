@@ -153,20 +153,11 @@ function _simulate_pagerank(m::MyHiddenMarkovModelWithJumps, start::Int64, steps
 end
 
 """
-    _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64, ...)
+    _simulate_trap(m, start, steps, trap_strength, entry_prob)
 
-Simulates a path using a **Regime-Dependent Trap** logic. This creates "Volatility Clustering"
-by making tail states "sticky" (hard to exit) while keeping normal states standard.
-
-# Arguments
-- `trap_strength`: Probability (0.0 - 1.0) of *staying* in a tail regime once entered. 
-   High values (e.g., 0.85) create long recessions.
-- `entry_prob`: The "Banana Peel" probability. A small chance to slip into a crash 
-   from a normal state, ensuring the model can actually enter crises.
-
-# Mechanism
-- **If Normal**: Follow standard matrix, but check `entry_prob` for sudden shocks.
-- **If Tail**: Check `trap_strength`. If caught, teleport *internally* within the tail.
+Advanced Version: Uses Re-Normalized Transition Probabilities inside the trap.
+Instead of jumping uniformly (White Noise), it respects the model's internal 
+dynamics while preventing exit.
 """
 function _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64, 
     trap_strength::Float64, entry_prob::Float64)::Array{Int64,1}
@@ -176,47 +167,70 @@ function _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::In
     chain[1] = start;
     n_states = length(m.states);
     
-    # Define The "Trap" Zones -
+    # Define Regimes
     crash_states = 1:3;
     boom_states = (n_states-2):n_states;
 
-    # main loop -
+    # Pre-calculate safe fallback indices for uniform sampling (just in case)
+    crash_indices = collect(crash_states)
+    boom_indices = collect(boom_states)
+
     for t in 2:steps
         prev = chain[t-1];
         
-        # Check Regime Status -
+        # Check Regime Status
         is_crash = prev in crash_states;
         is_boom  = prev in boom_states;
         is_tail  = is_crash || is_boom;
         
-        # 1. TRAP LOGIC (Persistence)
-        # If we are currently in a tail state, we check if we get "stuck"
+        # 1. TRAP LOGIC
         if (is_tail && (rand() < trap_strength))
             
-            # We are TRAPPED. 
-            # Teleport to a random state within the SAME regime to simulate turbulence.
+            # ADVANCED LOGIC:
+            # Instead of rand(crash_states), we try to follow the natural transition
+            # but force it to stay inside the regime.
+            
+            # Get the original transition probabilities for the previous state
+            original_probs = probs(m.transition[prev]) # Returns vector of floats
+            
             if is_crash
-                chain[t] = rand(crash_states);
+                # Extract only the probabilities for crash states
+                sub_probs = original_probs[crash_states]
+                total_p = sum(sub_probs)
+                
+                if total_p > 0.0
+                    # Renormalize to sum to 1.0
+                    normalized_probs = sub_probs ./ total_p
+                    # Sample from this restricted distribution
+                    # We map the result (1, 2, or 3) back to the actual state index
+                    local_idx = rand(Categorical(normalized_probs))
+                    chain[t] = crash_indices[local_idx]
+                else
+                    # Fallback if natural transition to crash is 0.0
+                    chain[t] = rand(crash_states)
+                end
             else
-                chain[t] = rand(boom_states);
+                # Same logic for Boom
+                sub_probs = original_probs[boom_states]
+                total_p = sum(sub_probs)
+                if total_p > 0.0
+                    normalized_probs = sub_probs ./ total_p
+                    local_idx = rand(Categorical(normalized_probs))
+                    chain[t] = boom_indices[local_idx]
+                else
+                    chain[t] = rand(boom_states)
+                end
             end
             
-        # 2. ENTRY LOGIC (The "Banana Peel")
-        # If we are normal, we need a small chance to slip into a crash.
-        # Without this, a stable transition matrix might never enter the tail.
+        # 2. ENTRY LOGIC
         elseif (!is_tail && (rand() < entry_prob))
+            chain[t] = rand(crash_states); 
             
-            # Spontaneous shock entry
-            chain[t] = rand(crash_states); # Bias towards negative shocks
-            
+        # 3. STANDARD LOGIC
         else
-            # 3. STANDARD LOGIC
-            # Follow the learned Transition Matrix implies by the data
             chain[t] = rand(m.transition[prev]);
         end
     end
-
-    # return -
     return chain;
 end
 
