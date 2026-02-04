@@ -155,68 +155,49 @@ end
 """
     _simulate_trap(m, start, steps, trap_strength, entry_prob)
 
-Advanced Version: Uses Re-Normalized Transition Probabilities inside the trap.
-Instead of jumping uniformly (White Noise), it respects the model's internal 
-dynamics while preventing exit.
+Corrected Version: Implements 'Sticky' dynamics inside the trap.
+Instead of random shuffling (which kills VC), this enforces persistence
+of the specific tail state, preserving the autocorrelation structure.
 """
 function _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::Int64, 
     trap_strength::Float64, entry_prob::Float64)::Array{Int64,1}
 
-    # initialize -
-    chain = Array{Int64,1}(undef, steps);
-    chain[1] = start;
-    n_states = length(m.states);
+    # initialize
+    chain = Array{Int64,1}(undef, steps)
+    chain[1] = start
+    n_states = length(m.states)
     
     # Define Regimes
-    crash_states = 1:3;
-    boom_states = (n_states-2):n_states;
-
-    # Pre-calculate safe fallback indices for uniform sampling (just in case)
+    crash_states = 1:3
+    boom_states = (n_states-2):n_states
+    
+    # Pre-allocate for performance
     crash_indices = collect(crash_states)
     boom_indices = collect(boom_states)
 
     for t in 2:steps
-        prev = chain[t-1];
+        prev = chain[t-1]
         
-        # Check Regime Status
-        is_crash = prev in crash_states;
-        is_boom  = prev in boom_states;
-        is_tail  = is_crash || is_boom;
+        # Check Regime
+        is_crash = prev in crash_states
+        is_boom  = prev in boom_states
+        is_tail  = is_crash || is_boom
         
-        # 1. TRAP LOGIC
+        # 1. TRAP LOGIC (The Fix)
         if (is_tail && (rand() < trap_strength))
             
-            # ADVANCED LOGIC:
-            # Instead of rand(crash_states), we try to follow the natural transition
-            # but force it to stay inside the regime.
+            # CRITICAL CHANGE: "Sticky" Logic
+            # Instead of jumping to a random crash state (White Noise),
+            # we have a high probability of REPEATING the exact same state.
+            # This creates the "blocks" of constant volatility needed for high ACF.
             
-            # Get the original transition probabilities for the previous state
-            original_probs = probs(m.transition[prev]) # Returns vector of floats
-            
-            if is_crash
-                # Extract only the probabilities for crash states
-                sub_probs = original_probs[crash_states]
-                total_p = sum(sub_probs)
-                
-                if total_p > 0.0
-                    # Renormalize to sum to 1.0
-                    normalized_probs = sub_probs ./ total_p
-                    # Sample from this restricted distribution
-                    # We map the result (1, 2, or 3) back to the actual state index
-                    local_idx = rand(Categorical(normalized_probs))
-                    chain[t] = crash_indices[local_idx]
-                else
-                    # Fallback if natural transition to crash is 0.0
-                    chain[t] = rand(crash_states)
-                end
+            if rand() < 0.7 # 70% chance to freeze in the exact current state
+                chain[t] = prev
             else
-                # Same logic for Boom
-                sub_probs = original_probs[boom_states]
-                total_p = sum(sub_probs)
-                if total_p > 0.0
-                    normalized_probs = sub_probs ./ total_p
-                    local_idx = rand(Categorical(normalized_probs))
-                    chain[t] = boom_indices[local_idx]
+                # 30% chance to move, but only to a neighbor in the same regime
+                # (Simulates evolving crisis)
+                if is_crash
+                    chain[t] = rand(crash_states)
                 else
                     chain[t] = rand(boom_states)
                 end
@@ -224,14 +205,15 @@ function _simulate_trap(m::MyHiddenMarkovModelWithJumps, start::Int64, steps::In
             
         # 2. ENTRY LOGIC
         elseif (!is_tail && (rand() < entry_prob))
-            chain[t] = rand(crash_states); 
+            chain[t] = rand(crash_states) # Shock entry
             
         # 3. STANDARD LOGIC
         else
-            chain[t] = rand(m.transition[prev]);
+            chain[t] = rand(m.transition[prev])
         end
     end
-    return chain;
+
+    return chain
 end
 
 # ========================================================================================= #
